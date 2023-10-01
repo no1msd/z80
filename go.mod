@@ -1,4 +1,4 @@
-module github.com/koron-go/z80
+module github.com/no1msd/z80
 
 go 1.19
 

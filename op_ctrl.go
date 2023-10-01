@@ -37,15 +37,19 @@ func oopDAA(cpu *CPU) {
 	cpu.AF.Lo = cpu.AF.Lo&^nand | or
 
 	cpu.AF.Hi = r
+
+	cpu.LastOpCycles = 4
 }
 
 func oopHALT(cpu *CPU) {
 	cpu.HALT = true
+	cpu.LastOpCycles = 4
 }
 
 func oopEI(cpu *CPU) {
 	cpu.IFF1 = true
 	cpu.IFF2 = true
+	cpu.LastOpCycles = 4
 }
 
 func oopCPL(cpu *CPU) {
@@ -55,6 +59,7 @@ func oopCPL(cpu *CPU) {
 	or |= cpu.AF.Hi & mask53
 	or |= maskH | maskN
 	cpu.AF.Lo = cpu.AF.Lo&^nand | or
+	cpu.LastOpCycles = 4
 }
 
 func oopNEG(cpu *CPU) {
@@ -79,6 +84,8 @@ func oopNEG(cpu *CPU) {
 		or |= maskC
 	}
 	cpu.AF.Lo = cpu.AF.Lo&^nand | or
+
+	cpu.LastOpCycles = 8
 }
 
 func oopCCF(cpu *CPU) {
@@ -91,6 +98,7 @@ func oopCCF(cpu *CPU) {
 		or |= maskC
 	}
 	cpu.AF.Lo = cpu.AF.Lo&^nand | or
+	cpu.LastOpCycles = 4
 }
 
 func oopSCF(cpu *CPU) {
@@ -99,25 +107,31 @@ func oopSCF(cpu *CPU) {
 	or |= cpu.AF.Hi & mask53
 	or |= maskC
 	cpu.AF.Lo = cpu.AF.Lo&^nand | or
+	cpu.LastOpCycles = 4
 }
 
 func oopNOP(cpu *CPU) {
 	// do nothing.
+	cpu.LastOpCycles = 4
 }
 
 func oopDI(cpu *CPU) {
 	cpu.IFF1 = false
 	cpu.IFF2 = false
+	cpu.LastOpCycles = 4
 }
 
 func oopIM0(cpu *CPU) {
 	cpu.IM = 0
+	cpu.LastOpCycles = 8
 }
 
 func oopIM1(cpu *CPU) {
 	cpu.IM = 1
+	cpu.LastOpCycles = 8
 }
 
 func oopIM2(cpu *CPU) {
 	cpu.IM = 2
+	cpu.LastOpCycles = 8
 }

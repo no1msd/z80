@@ -2,34 +2,40 @@ package z80
 
 func oopEXDEHL(cpu *CPU) {
 	cpu.HL, cpu.DE = cpu.DE, cpu.HL
+	cpu.LastOpCycles = 4
 }
 
 func oopEXAFAF(cpu *CPU) {
 	cpu.AF, cpu.Alternate.AF = cpu.Alternate.AF, cpu.AF
+	cpu.LastOpCycles = 4
 }
 
 func oopEXX(cpu *CPU) {
 	cpu.BC, cpu.Alternate.BC = cpu.Alternate.BC, cpu.BC
 	cpu.DE, cpu.Alternate.DE = cpu.Alternate.DE, cpu.DE
 	cpu.HL, cpu.Alternate.HL = cpu.Alternate.HL, cpu.HL
+	cpu.LastOpCycles = 4
 }
 
 func oopEXSPPHL(cpu *CPU) {
 	v := cpu.readU16(cpu.SP)
 	cpu.writeU16(cpu.SP, cpu.HL.U16())
 	cpu.HL.SetU16(v)
+	cpu.LastOpCycles = 19
 }
 
 func oopEXSPPIX(cpu *CPU) {
 	v := cpu.readU16(cpu.SP)
 	cpu.writeU16(cpu.SP, cpu.IX)
 	cpu.IX = v
+	cpu.LastOpCycles = 23
 }
 
 func oopEXSPPIY(cpu *CPU) {
 	v := cpu.readU16(cpu.SP)
 	cpu.writeU16(cpu.SP, cpu.IY)
 	cpu.IY = v
+	cpu.LastOpCycles = 23
 }
 
 func (cpu *CPU) updateFlagLDID(a uint8) {
@@ -53,12 +59,16 @@ func oopLDI(cpu *CPU) {
 	cpu.HL.SetU16(hl + 1)
 	cpu.BC.SetU16(bc - 1)
 	cpu.updateFlagLDID(a)
+	cpu.LastOpCycles = 16
 }
 
 func oopLDIR(cpu *CPU) {
 	oopLDI(cpu)
 	if cpu.AF.Lo&maskPV != 0 { // cpu.BC != 0
 		cpu.PC -= 2
+		cpu.LastOpCycles = 21
+	} else {
+		cpu.LastOpCycles = 16
 	}
 }
 
@@ -72,12 +82,16 @@ func oopLDD(cpu *CPU) {
 	cpu.HL.SetU16(hl - 1)
 	cpu.BC.SetU16(bc - 1)
 	cpu.updateFlagLDID(a)
+	cpu.LastOpCycles = 16
 }
 
 func oopLDDR(cpu *CPU) {
 	oopLDD(cpu)
 	if cpu.AF.Lo&maskPV != 0 { // cpu.BC != 0
 		cpu.PC -= 2
+		cpu.LastOpCycles = 21
+	} else {
+		cpu.LastOpCycles = 16
 	}
 }
 
@@ -114,6 +128,7 @@ func oopCPI(cpu *CPU) {
 	cpu.HL.SetU16(hl + 1)
 	cpu.BC.SetU16(bc - 1)
 	cpu.updateFlagCPx(r, a, x)
+	cpu.LastOpCycles = 16
 }
 
 func oopCPIR(cpu *CPU) {
@@ -121,6 +136,9 @@ func oopCPIR(cpu *CPU) {
 	// cpu.BC != 0 && A - (HL) != 0
 	if cpu.AF.Lo&maskPV != 0 && cpu.AF.Lo&maskZ == 0 {
 		cpu.PC -= 2
+		cpu.LastOpCycles = 21
+	} else {
+		cpu.LastOpCycles = 16
 	}
 }
 
@@ -133,6 +151,7 @@ func oopCPD(cpu *CPU) {
 	cpu.HL.SetU16(hl - 1)
 	cpu.BC.SetU16(bc - 1)
 	cpu.updateFlagCPx(r, a, x)
+	cpu.LastOpCycles = 16
 }
 
 func oopCPDR(cpu *CPU) {
@@ -140,5 +159,8 @@ func oopCPDR(cpu *CPU) {
 	// cpu.BC != 0 && A - (HL) != 0
 	if cpu.AF.Lo&maskPV != 0 && cpu.AF.Lo&maskZ == 0 {
 		cpu.PC -= 2
+		cpu.LastOpCycles = 21
+	} else {
+		cpu.LastOpCycles = 16
 	}
 }

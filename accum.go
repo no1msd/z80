@@ -284,6 +284,7 @@ func (cpu *CPU) bitchk8(b, v uint8) {
 	or |= maskH
 	or |= v & mask53
 	cpu.AF.Lo = cpu.AF.Lo&^nand | or
+	cpu.LastOpCycles = 8
 }
 
 func (cpu *CPU) bitset8(b, v uint8) uint8 {

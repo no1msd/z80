@@ -20,6 +20,8 @@ type CPU struct {
 
 	Debug       bool
 	BreakPoints map[uint16]struct{}
+
+	LastOpCycles int
 }
 
 // States is collection of Z80's internal state.
